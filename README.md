@@ -13,8 +13,11 @@ On iPhone or iPad: open it in Safari → Share → **Add to Home Screen**. After
    - **E shape**: root on the 6th string (F is at the 1st fret).
    - **A shape**: root on the 5th string (B♭ is at the 1st fret).
 4. **Hear it** strums the chord on a plucked-string synth.
+5. The **printer** button (next to the gear) prints a chord sheet: this chord (big, one page), all major chords,
+   all minor chords, or everything (two pages). Sheets print landscape, in light colours, with the chord name
+   (F, B♭m…) in big letters above every diagram.
 
-In each diagram the numbers are fingers (1 = index), orange rings mark the root notes, × means don't play that
+The chord name is in big letters above each diagram. In each diagram the numbers are fingers (1 = index), orange rings mark the root notes, × means don't play that
 string, and the note names are written under the strings. The chord's notes are listed under its name.
 E and A land on the 12th fret (the same as the open chords, an octave up).
 

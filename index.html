@@ -93,6 +93,7 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .shapes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px 10px 12px; text-align: center; }
+.sym { font-family: var(--f-display); font-weight: 800; font-size: 3.6rem; line-height: 1; margin: 0 0 2px; }
 .card h3 { font-family: var(--f-display); font-weight: 800; font-size: 1.6rem; text-transform: uppercase; margin: 0; line-height: 1.05; }
 .card .cap { margin: 2px 0 6px; color: var(--muted); font-size: .9rem; }
 .card .cap b { color: var(--ink); }
@@ -115,6 +116,39 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .shapes { gap: 8px; } .card { padding: 12px 4px 10px; } .card h3 { font-size: 1.35rem; } .card .cap { font-size: .8rem; }
   .chord-name h2 { font-size: 2.2rem; }
 }
+
+.head-btns { display: flex; gap: 8px; }
+.acc { font-family: var(--f-body); font-weight: 700; font-size: .78em; vertical-align: .12em; margin-left: .03em; }
+.print-choices { display: grid; gap: 8px; margin-top: 12px; }
+.print-choices .btn { text-align: left; padding: 12px 14px; display: flex; flex-direction: column; }
+.print-choices .btn small { font-weight: 400; color: var(--muted); font-size: .85rem; }
+#print-sheet { display: none; }
+
+/* Paper: only the chord sheet, always in light colours */
+@media print {
+  @page { size: letter landscape; margin: 0.4in; }
+  :root, :root[data-theme="dark"] { --bg:#fff; --surface:#fff; --ink:#1E1B18; --muted:#555; --line:#ccc;
+    --accent:#F57C14; --accent-ink:#9A4204; color-scheme: light; }
+  body { background: #fff; }
+  body > *:not(#print-sheet) { display: none !important; }
+  #print-sheet { display: block; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+.sheet { break-after: page; page-break-after: always; }
+.sheet:last-child { break-after: auto; page-break-after: auto; }
+.sheet h1 { font-size: 26pt; margin: 0 0 2pt; }
+.sheet .sub { margin: 0 0 8pt; color: var(--muted); font-size: 9.5pt; }
+.sheet-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6pt 10pt; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: 8pt; padding: 3pt 2pt 1pt; break-inside: avoid; }
+.sheet-grid.big { grid-template-columns: repeat(2, 1fr); column-gap: 24pt; margin-top: 18pt; }
+.pcell { text-align: center; break-inside: avoid; }
+.pcell h4 { margin: 0; font-family: var(--f-display); font-weight: 800; font-size: 13pt; text-transform: uppercase; line-height: 1.1; }
+.pcell p { margin: 0; color: var(--muted); font-size: 8pt; }
+.pcell p.psym { color: var(--ink); font-family: var(--f-display); font-weight: 800; font-size: 24pt; line-height: 1; }
+.sheet-grid.big .pcell p.psym { font-size: 60pt; }
+.pcell .diagram svg { max-width: none; width: auto; height: 1in; }
+.sheet-grid.big .pcell h4 { font-size: 24pt; }
+.sheet-grid.big .pcell p { font-size: 12pt; }
+.sheet-grid.big .pcell .diagram svg { height: 4.3in; }
 
 dialog { border: 1px solid var(--line); border-radius: 16px; padding: 0; width: min(440px, calc(100vw - 32px));
   background: var(--surface); color: var(--ink); }
@@ -146,9 +180,14 @@ dialog::backdrop { background: rgb(0 0 0 / .45); }
       <h1>Raise the Barre</h1>
       <p>E-shape and A-shape barre chords, major and minor, for every note.</p>
     </div>
+    <div class="head-btns">
+    <button type="button" class="icon-btn" id="print-open" aria-label="Print chords">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg>
+    </button>
     <button type="button" class="icon-btn" id="settings-open" aria-label="Settings">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.830l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.650 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </button>
+    </div>
   </header>
 
   <div class="views" role="group" aria-label="Major or minor">
@@ -173,12 +212,14 @@ dialog::backdrop { background: rgb(0 0 0 / .45); }
 
   <div class="shapes">
     <section class="card">
+      <p class="sym" id="sym-e"></p>
       <h3>E shape</h3>
       <p class="cap" id="cap-e"></p>
       <div class="diagram" id="dia-e"></div>
       <button type="button" class="hear" data-hear="E"><svg viewBox="0 0 24 24"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>Hear it</button>
     </section>
     <section class="card">
+      <p class="sym" id="sym-a"></p>
       <h3>A shape</h3>
       <p class="cap" id="cap-a"></p>
       <div class="diagram" id="dia-a"></div>
@@ -200,6 +241,21 @@ dialog::backdrop { background: rgb(0 0 0 / .45); }
     <div class="set-row"><div><b>App version</b><p class="cap" id="ver-line"></p></div><button type="button" class="btn" id="set-update">Check for updates</button></div>
   </div>
 </dialog>
+
+<dialog id="print-dlg">
+  <div class="dlg">
+    <div class="dlg-head"><h2>Print chords</h2><button type="button" class="icon-btn" id="print-close" aria-label="Close">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="print-choices">
+      <button type="button" class="btn" data-print="this"><b id="print-this-name">This chord</b><small>Both shapes, one page</small></button>
+      <button type="button" class="btn" data-print="major"><b>All major chords</b><small>All 12 notes, both shapes, one page</small></button>
+      <button type="button" class="btn" data-print="minor"><b>All minor chords</b><small>All 12 notes, both shapes, one page</small></button>
+      <button type="button" class="btn" data-print="all"><b>Everything</b><small>Major and minor, two pages</small></button>
+    </div>
+  </div>
+</dialog>
+
+<div id="print-sheet"></div>
 
 <div class="update" id="update-banner" role="status" hidden><span>A new version is ready.</span><button type="button" class="btn primary" id="update-btn">Update</button></div>
 
@@ -226,6 +282,9 @@ const ROOTS = [
   { maj: ['B', 0],  min: ['B', 0] },
 ];
 const spell = ([l, a]) => l + ACC[a];
+const spellHtml = ([l, a]) => l + (a ? `<span class="acc">${ACC[a]}</span>` : '');
+// Chord symbol as written over a chord chart: F, Fm, B♭m
+const symbolHtml = (pc, q) => spellHtml(ROOTS[pc][key(q)]) + (q === 'minor' ? 'm' : '');
 const key = q => (q === 'major' ? 'maj' : 'min');
 
 // Root, 3rd and 5th spelled properly (C minor = C E♭ G, not C D♯ G).
@@ -256,14 +315,14 @@ const SHAPES = {
 const barreFret = (shape, pc) => ((pc - SHAPES[shape].openPc + 12) % 12) || 12;
 const ordinal = n => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th');
 
-function drawShape(shape, pc, q) {
+function drawShape(shape, pc, q, tight) {
   const s = SHAPES[shape], v = s[q], f = barreFret(shape, pc);
   const tones = chordTones(pc, q);
   const nameOf = p => (tones.find(t => t.pc === p) || {}).name || '';
   const X0 = 45, DX = 30, Y0 = 46, DY = 46, ROWS = 4;
   const sx = i => X0 + i * DX;
   const rowY = r => Y0 + (r + 0.5) * DY;
-  let o = `<svg viewBox="0 0 230 290" role="img" aria-label="${shape} shape, barre at fret ${f}">`;
+  let o = `<svg viewBox="${tight ? '-14 18 244 252' : '0 0 230 290'}" role="img" aria-label="${shape} shape, barre at fret ${f}">`;
   for (let r = 0; r <= ROWS; r++) o += `<line class="fret" x1="${sx(0)}" x2="${sx(5)}" y1="${Y0 + r * DY}" y2="${Y0 + r * DY}"/>`;
   if (f === 1) o += `<line class="nut" x1="${sx(0)}" x2="${sx(5)}" y1="${Y0 - 2}" y2="${Y0 - 2}"/>`;
   for (let i = 0; i < 6; i++) o += `<line class="str" x1="${sx(i)}" x2="${sx(i)}" y1="${Y0}" y2="${Y0 + ROWS * DY}"/>`;
@@ -342,13 +401,14 @@ function render() {
     b.querySelector('small').textContent = n.alt ? spell(n.alt[k]) : '';
   });
   const word = q === 'major' ? 'major' : 'minor';
-  $('name').innerHTML = `${spell(r[k])} ${word}` + (r.alt ? ` <span class="alt">or ${spell(r.alt[k])}</span>` : '');
+  $('name').innerHTML = `${spellHtml(r[k])} ${word}` + (r.alt ? ` <span class="alt">or ${spell(r.alt[k])}</span>` : '');
   $('tones').textContent = 'Notes: ' + chordTones(pc, q).map(t => t.name).join(' · ');
   for (const sh of ['E', 'A']) {
     const f = barreFret(sh, pc);
     const str = sh === 'E' ? '6th' : '5th';
     $('cap-' + sh.toLowerCase()).innerHTML = `Root on the ${str} string<br><b>${ordinal(f)} fret</b>`;
     $('dia-' + sh.toLowerCase()).innerHTML = drawShape(sh, pc, q);
+    $('sym-' + sh.toLowerCase()).innerHTML = symbolHtml(pc, q);
   }
   try { localStorage.setItem('rtb.state', JSON.stringify(state)); } catch {}
 }
@@ -358,6 +418,47 @@ $('up').addEventListener('click', () => { state.pc = (state.pc + 1) % 12; render
 $('down').addEventListener('click', () => { state.pc = (state.pc + 11) % 12; render(); });
 document.querySelectorAll('[data-hear]').forEach(b => b.addEventListener('click', () => strum(b.dataset.hear)));
 render();
+
+// ---- Printing ----
+const ORDER = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];  // C up to B, same as the note buttons
+function chordLabel(pc, q, html) {
+  const r = ROOTS[pc][key(q)];
+  return (html ? spellHtml(r) : spell(r)) + (q === 'major' ? ' major' : ' minor');
+}
+function cell(pc, q, sh, big) {
+  const f = barreFret(sh, pc);
+  return `<div class="pcell"><p class="psym">${symbolHtml(pc, q)}</p>` +
+    (big ? `<h4>${sh} shape</h4><p>Root on the ${sh === 'E' ? '6th' : '5th'} string, ${ordinal(f)} fret</p>`
+    : `<p>${sh} shape · ${ordinal(f)} fret</p>`) +
+    `<div class="diagram">${drawShape(sh, pc, q, true)}</div></div>`;
+}
+function sheet(q) {
+  return `<section class="sheet"><h1>${q === 'major' ? 'Major' : 'Minor'} barre chords</h1>` +
+    `<p class="sub">E shape: root on the 6th string. A shape: root on the 5th string. Numbers are fingers (1 = index), ` +
+    `rings mark the root, × = don't play that string.</p>` +
+    `<div class="sheet-grid">${ORDER.map(pc => `<div class="pair">` +
+      cell(pc, q, 'E') + cell(pc, q, 'A') + '</div>').join('')}</div></section>`;
+}
+function printChords(what) {
+  let html;
+  if (what === 'this') {
+    html = `<section class="sheet"><h1>${chordLabel(state.pc, state.q, true)}</h1>` +
+      `<p class="sub">Notes: ${chordTones(state.pc, state.q).map(t => t.name).join(' · ')}. Numbers are fingers (1 = index), ` +
+      `rings mark the root, × = don't play that string.</p>` +
+      `<div class="sheet-grid big">${cell(state.pc, state.q, 'E', true)}${cell(state.pc, state.q, 'A', true)}</div></section>`;
+  } else if (what === 'all') html = sheet('major') + sheet('minor');
+  else html = sheet(what);
+  $('print-sheet').innerHTML = html;
+  $('print-dlg').close();
+  setTimeout(() => window.print(), 50);
+}
+$('print-open').addEventListener('click', () => {
+  $('print-this-name').textContent = 'This chord: ' + chordLabel(state.pc, state.q);
+  $('print-dlg').showModal();
+});
+$('print-close').addEventListener('click', () => $('print-dlg').close());
+$('print-dlg').addEventListener('click', e => { if (e.target === $('print-dlg')) $('print-dlg').close(); });
+document.querySelectorAll('[data-print]').forEach(b => b.addEventListener('click', () => printChords(b.dataset.print)));
 
 // ---- Settings: appearance and app updates (saved on this device) ----
 function markTheme() {
@@ -400,7 +501,7 @@ $('set-update').addEventListener('click', async () => {
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v1';
+window.APP_VERSION = 'v2';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');

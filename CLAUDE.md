@@ -72,6 +72,12 @@ Listed in the Apps suite under "students & clients".
 - `ROOTS` sets how each note is spelled for major and minor (D♭ major but C♯ minor, etc.) plus the other name;
   `chordTones()` spells the 3rd and 5th properly (C minor = C E♭ G).
 - Diagrams are drawn as inline SVG in `drawShape()` and coloured with the theme variables.
+- Big chord symbol (F, B♭m) above each diagram, on screen and on paper (`symbolHtml()`). Big Shoulders has no ♭/♯,
+  so `spellHtml()` wraps accidentals in `.acc` (body font) inside display-font headings.
+- **Printing:** the printer button opens a dialog (this chord / all major / all minor / everything). `printChords()`
+  fills `#print-sheet` and calls `window.print()`; `@media print` hides everything else, forces light colours, letter landscape.
+  Each set of 12 chords fits one page as a 3×4 grid of E/A pairs; diagrams use a tighter viewBox (`drawShape(..., true)`).
+  If you change sizes, check that "Everything" is still exactly two pages (headless Chrome `--print-to-pdf` works for this).
 - **Hear it** is a Karplus–Strong plucked-string synth (no samples, no voice), strummed low to high.
 - **Publish:** run `tools/bump.sh` (bumps `sw.js` and index.html together), commit, push, confirm live.
 - **Test locally:** `Start Raise the Barre.command`, or `python3 -m http.server 8778` here and open http://localhost:8778/.
