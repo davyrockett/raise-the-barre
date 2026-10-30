@@ -126,7 +126,6 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* Paper: only the chord sheet, always in light colours */
 @media print {
-  @page { size: letter landscape; margin: 0.4in; }
   :root, :root[data-theme="dark"] { --bg:#fff; --surface:#fff; --ink:#1E1B18; --muted:#555; --line:#ccc;
     --accent:#F57C14; --accent-ink:#9A4204; color-scheme: light; }
   body { background: #fff; }
@@ -140,6 +139,8 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .sheet-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6pt 10pt; }
 .pair { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: 8pt; padding: 3pt 2pt 1pt; break-inside: avoid; }
 .sheet-grid.big { grid-template-columns: repeat(2, 1fr); column-gap: 24pt; margin-top: 18pt; }
+.sheet-grid.large { grid-template-columns: repeat(2, 1fr); gap: 10pt 10pt; }
+.sheet-grid.large .pair { padding: 6pt 2pt 4pt; }
 .pcell { text-align: center; break-inside: avoid; }
 .pcell h4 { margin: 0; font-family: var(--f-display); font-weight: 800; font-size: 13pt; text-transform: uppercase; line-height: 1.1; }
 .pcell p { margin: 0; color: var(--muted); font-size: 8pt; }
@@ -149,6 +150,9 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .sheet-grid.big .pcell h4 { font-size: 24pt; }
 .sheet-grid.big .pcell p { font-size: 12pt; }
 .sheet-grid.big .pcell .diagram svg { height: 4.3in; }
+.sheet-grid.large .pcell p { font-size: 10.5pt; }
+.sheet-grid.large .pcell p.psym { font-size: 38pt; }
+.sheet-grid.large .pcell .diagram svg { height: 1.9in; }
 
 dialog { border: 1px solid var(--line); border-radius: 16px; padding: 0; width: min(440px, calc(100vw - 32px));
   background: var(--surface); color: var(--ink); }
@@ -251,10 +255,12 @@ dialog::backdrop { background: rgb(0 0 0 / .45); }
       <button type="button" class="btn" data-print="major"><b>All major chords</b><small>All 12 notes, both shapes, one page</small></button>
       <button type="button" class="btn" data-print="minor"><b>All minor chords</b><small>All 12 notes, both shapes, one page</small></button>
       <button type="button" class="btn" data-print="all"><b>Everything</b><small>Major and minor, two pages</small></button>
+      <button type="button" class="btn" data-print="large"><b>Everything, large</b><small>Major and minor, bigger diagrams, four pages (portrait)</small></button>
     </div>
   </div>
 </dialog>
 
+<style id="page-size"></style>
 <div id="print-sheet"></div>
 
 <div class="update" id="update-banner" role="status" hidden><span>A new version is ready.</span><button type="button" class="btn primary" id="update-btn">Update</button></div>
@@ -439,9 +445,21 @@ function sheet(q) {
     `<div class="sheet-grid">${ORDER.map(pc => `<div class="pair">` +
       cell(pc, q, 'E') + cell(pc, q, 'A') + '</div>').join('')}</div></section>`;
 }
+// Bigger diagrams: six chords (E and A shape each) per portrait page, C to F then F♯ to B.
+function largeSheet(q, half) {
+  const notes = ORDER.slice(half * 6, half * 6 + 6);
+  const range = chordLabel(notes[0], q, true).replace(/ m(aj|in)or$/, '') + ' to ' + chordLabel(notes[5], q, true).replace(/ m(aj|in)or$/, '');
+  return `<section class="sheet"><h1>${q === 'major' ? 'Major' : 'Minor'} barre chords: ${range}</h1>` +
+    `<p class="sub">E shape: root on the 6th string. A shape: root on the 5th string. Numbers are fingers (1 = index), ` +
+    `rings mark the root, × = don't play that string.</p>` +
+    `<div class="sheet-grid large">${notes.map(pc => `<div class="pair">` +
+      cell(pc, q, 'E') + cell(pc, q, 'A') + '</div>').join('')}</div></section>`;
+}
 function printChords(what) {
   let html;
-  if (what === 'this') {
+  $('page-size').textContent = `@media print { @page { size: letter ${what === 'large' ? 'portrait' : 'landscape'}; margin: 0.4in; } }`;
+  if (what === 'large') html = largeSheet('major', 0) + largeSheet('major', 1) + largeSheet('minor', 0) + largeSheet('minor', 1);
+  else if (what === 'this') {
     html = `<section class="sheet"><h1>${chordLabel(state.pc, state.q, true)}</h1>` +
       `<p class="sub">Notes: ${chordTones(state.pc, state.q).map(t => t.name).join(' · ')}. Numbers are fingers (1 = index), ` +
       `rings mark the root, × = don't play that string.</p>` +
@@ -501,7 +519,7 @@ $('set-update').addEventListener('click', async () => {
 <script>
 // Offline support + updates. See sw.js.
 // The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
-window.APP_VERSION = 'v2';
+window.APP_VERSION = 'v3';
 (async () => {
   if (!('serviceWorker' in navigator)) return;
   const reg = await navigator.serviceWorker.register('sw.js');
