@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Raise the Barre</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Raise the Barre">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#F1F0EC">
+<script src="move.js" data-keep="rtb."></script>
+<script src="suite.js" defer></script>
+<script src="share.js" defer></script>
+<script>
+const THEME_BG = { light: '#F1F0EC', dark: '#151310' };
+function applyTheme(t) {
+  const r = document.documentElement;
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (t === 'auto') r.removeAttribute('data-theme');
+  else r.setAttribute('data-theme', t);
+  const dark = t === 'dark' || (t === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
+  meta.setAttribute('content', dark ? THEME_BG.dark : THEME_BG.light);
+}
+function savedTheme() { try { return localStorage.getItem('rtb.theme') || 'light'; } catch { return 'light'; } }
+applyTheme(savedTheme());
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+:root {
+  --bg:#F1F0EC; --surface:#FFFFFF; --sunk:#E7E5DF; --ink:#1E1B18; --muted:#676767; --line:#D8D4CC;
+  --accent:#F57C14; --accent-ink:#9A4204; --accent-soft:#FDE3CC;
+  --f-display:"Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+  --f-body:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme]) {
+  --bg:#151310; --surface:#201C18; --sunk:#2A2520; --ink:#F0EBE3; --muted:#A3A3A3; --line:#3B342D;
+  --accent:#FF9433; --accent-ink:#FFBD85; --accent-soft:#422712; color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg:#151310; --surface:#201C18; --sunk:#2A2520; --ink:#F0EBE3; --muted:#A3A3A3; --line:#3B342D;
+  --accent:#FF9433; --accent-ink:#FFBD85; --accent-soft:#422712; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 17px; line-height: 1.5;
+  -webkit-text-size-adjust: 100%; }
+.wrap { max-width: 760px; margin: 0 auto;
+  padding: calc(24px + env(safe-area-inset-top, 0px)) 16px calc(48px + env(safe-area-inset-bottom, 0px)); }
+h1, h2 { font-family: var(--f-display); font-weight: 800; letter-spacing: .01em; line-height: 1.02; margin: 0; text-transform: uppercase; }
+h1 { font-size: 2.6rem; }
+header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 20px; }
+header p { margin: 4px 0 0; color: var(--muted); }
+button { font: inherit; color: inherit; }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.icon-btn { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0;
+  border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--muted); cursor: pointer; }
+
+/* Major | Minor switch: same pill style as Page Fright's Read | Improv switch */
+.views { display: inline-flex; gap: 2px; padding: 4px; border-radius: 999px; background: var(--sunk); border: 1px solid var(--line);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,.12), inset 0 -1px 0 rgba(255,255,255,.5); }
+.views button { border: 0; background: transparent; border-radius: 999px; padding: 8px 24px; font-size: 16px; font-weight: 700;
+  line-height: 1.2; color: var(--muted); cursor: pointer; touch-action: manipulation; }
+.views button:hover { color: var(--ink); }
+.views button[aria-pressed="true"] { background: var(--accent); color: #1E1B18;
+  box-shadow: 0 2px 5px rgba(0,0,0,.25), 0 1px 1px rgba(0,0,0,.15), inset 0 1px 0 rgba(255,255,255,.35), inset 0 -2px 0 rgba(0,0,0,.12); }
+:root[data-theme="dark"] .views { box-shadow: inset 0 2px 5px rgba(0,0,0,.5), inset 0 -1px 0 rgba(255,255,255,.04); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .views { box-shadow: inset 0 2px 5px rgba(0,0,0,.5), inset 0 -1px 0 rgba(255,255,255,.04); } }
+
+/* The 12 notes */
+.notes { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin: 14px 0 22px; }
+@media (min-width: 700px) { .notes { grid-template-columns: repeat(12, 1fr); } }
+.note { height: 54px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1; touch-action: manipulation; padding: 0; }
+.note b { font-size: 1.15rem; }
+.note small { font-size: .75rem; color: var(--muted); min-height: 1.1em; }
+.note[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #1E1B18; }
+.note[aria-pressed="true"] small { color: #1E1B18; opacity: .7; }
+
+/* Chord name with half-step arrows */
+.chord-head { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; gap: 10px; margin-bottom: 14px; }
+.chord-name { text-align: center; }
+.chord-name h2 { font-size: 2.6rem; }
+.chord-name p { margin: 4px 0 0; color: var(--muted); }
+.chord-name .alt { font-size: 1rem; color: var(--muted); font-family: var(--f-body); text-transform: none; letter-spacing: 0; font-weight: 400; }
+
+.shapes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px 10px 12px; text-align: center; }
+.card h3 { font-family: var(--f-display); font-weight: 800; font-size: 1.6rem; text-transform: uppercase; margin: 0; line-height: 1.05; }
+.card .cap { margin: 2px 0 6px; color: var(--muted); font-size: .9rem; }
+.card .cap b { color: var(--ink); }
+.diagram svg { display: block; width: 100%; max-width: 300px; height: auto; margin: 0 auto; }
+.diagram .str, .diagram .fret { stroke: var(--muted); stroke-width: 1.5; }
+.diagram .nut { stroke: var(--ink); stroke-width: 7; stroke-linecap: square; }
+.diagram .dot { fill: var(--ink); }
+.diagram .fing { fill: var(--surface); font: 700 15px var(--f-body); }
+.diagram .mute { stroke: var(--muted); stroke-width: 2.2; stroke-linecap: round; }
+.diagram .frlabel { fill: var(--muted); font: 700 14px var(--f-body); }
+.diagram .nm { fill: var(--muted); font: 400 16px var(--f-body); }
+.diagram .nm.root { fill: var(--accent-ink); font-weight: 700; }
+.diagram .rootring { fill: none; stroke: var(--accent); stroke-width: 3; }
+.hear { margin-top: 8px; display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--sunk); font-weight: 700; cursor: pointer; touch-action: manipulation; }
+.hear svg { width: 16px; height: 16px; fill: currentColor; }
+.legend { margin: 14px 0 0; color: var(--muted); font-size: .85rem; text-align: center; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 3px solid var(--accent); vertical-align: -1px; }
+@media (max-width: 420px) {
+  .shapes { gap: 8px; } .card { padding: 12px 4px 10px; } .card h3 { font-size: 1.35rem; } .card .cap { font-size: .8rem; }
+  .chord-name h2 { font-size: 2.2rem; }
+}
+
+dialog { border: 1px solid var(--line); border-radius: 16px; padding: 0; width: min(440px, calc(100vw - 32px));
+  background: var(--surface); color: var(--ink); }
+dialog::backdrop { background: rgb(0 0 0 / .45); }
+.dlg { padding: 20px; }
+.dlg-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.dlg-head h2 { margin: 0; font-size: 1.5rem; }
+.set-row { display: flex; justify-content: space-between; align-items: center; gap: 12px 16px; flex-wrap: wrap; padding: 14px 0; }
+.set-row + .set-row { border-top: 1px solid var(--line); }
+.set-row > div:first-child { flex: 1 1 180px; min-width: 0; }
+.set-row .cap { margin: 2px 0 0; color: var(--muted); font-size: .85rem; }
+.btn { font-size: .95rem; font-weight: 700; border-radius: 8px; padding: 8px 14px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--surface); }
+.btn:disabled { opacity: .6; cursor: default; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #1E1B18; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--surface); }
+.seg button { border: 0; background: none; padding: 7px 12px; font-size: .9rem; font-weight: 700; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: #1E1B18; }
+.update { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+  display: flex; gap: 12px; align-items: center; padding: 8px 8px 8px 16px; border-radius: 12px;
+  background: var(--ink); color: var(--bg); box-shadow: 0 6px 24px rgb(0 0 0 / .25); white-space: nowrap; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Raise the Barre</h1>
+      <p>E-shape and A-shape barre chords, major and minor, for every note.</p>
+    </div>
+    <button type="button" class="icon-btn" id="settings-open" aria-label="Settings">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.830l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.650 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+  </header>
+
+  <div class="views" role="group" aria-label="Major or minor">
+    <button type="button" data-q="major">Major</button>
+    <button type="button" data-q="minor">Minor</button>
+  </div>
+
+  <div class="notes" id="notes" role="group" aria-label="Root note"></div>
+
+  <div class="chord-head">
+    <button type="button" class="icon-btn" id="down" aria-label="Down a half step">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <div class="chord-name">
+      <h2 id="name"></h2>
+      <p id="tones"></p>
+    </div>
+    <button type="button" class="icon-btn" id="up" aria-label="Up a half step">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+
+  <div class="shapes">
+    <section class="card">
+      <h3>E shape</h3>
+      <p class="cap" id="cap-e"></p>
+      <div class="diagram" id="dia-e"></div>
+      <button type="button" class="hear" data-hear="E"><svg viewBox="0 0 24 24"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>Hear it</button>
+    </section>
+    <section class="card">
+      <h3>A shape</h3>
+      <p class="cap" id="cap-a"></p>
+      <div class="diagram" id="dia-a"></div>
+      <button type="button" class="hear" data-hear="A"><svg viewBox="0 0 24 24"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>Hear it</button>
+    </section>
+  </div>
+  <p class="legend">Numbers are fingers (1 = index). <i></i> = root note. × = don't play that string.</p>
+</div>
+
+<dialog id="settings">
+  <div class="dlg">
+    <div class="dlg-head"><h2>Settings</h2><button type="button" class="icon-btn" id="settings-close" aria-label="Close">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="set-row"><div><b>Appearance</b><p class="cap">Auto follows your device's light or dark setting.</p></div>
+      <div class="seg" role="group" aria-label="Appearance">
+        <button type="button" data-theme-v="light">Light</button><button type="button" data-theme-v="dark">Dark</button><button type="button" data-theme-v="auto">Auto</button>
+      </div></div>
+    <div class="set-row" data-share><div><b>Share this app</b><p class="cap" data-share-link></p></div><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button type="button" class="btn" data-share-copy>Copy link</button><button type="button" class="btn" data-share-send hidden>Share…</button></div></div>
+    <div class="set-row"><div><b>App version</b><p class="cap" id="ver-line"></p></div><button type="button" class="btn" id="set-update">Check for updates</button></div>
+  </div>
+</dialog>
+
+<div class="update" id="update-banner" role="status" hidden><span>A new version is ready.</span><button type="button" class="btn primary" id="update-btn">Update</button></div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+// ---- Note names ----
+const LETTERS = 'CDEFGAB';
+const LETTER_PC = [0, 2, 4, 5, 7, 9, 11];
+const ACC = { '-2': '𝄫', '-1': '♭', '0': '', '1': '♯', '2': '𝄪' };
+// How each root is usually spelled: [letter, accidental] for major and for minor, plus the other name.
+const ROOTS = [
+  { maj: ['C', 0],  min: ['C', 0] },
+  { maj: ['D', -1], min: ['C', 1],  alt: { maj: ['C', 1], min: ['D', -1] } },
+  { maj: ['D', 0],  min: ['D', 0] },
+  { maj: ['E', -1], min: ['E', -1], alt: { maj: ['D', 1], min: ['D', 1] } },
+  { maj: ['E', 0],  min: ['E', 0] },
+  { maj: ['F', 0],  min: ['F', 0] },
+  { maj: ['F', 1],  min: ['F', 1],  alt: { maj: ['G', -1], min: ['G', -1] } },
+  { maj: ['G', 0],  min: ['G', 0] },
+  { maj: ['A', -1], min: ['G', 1],  alt: { maj: ['G', 1], min: ['A', -1] } },
+  { maj: ['A', 0],  min: ['A', 0] },
+  { maj: ['B', -1], min: ['B', -1], alt: { maj: ['A', 1], min: ['A', 1] } },
+  { maj: ['B', 0],  min: ['B', 0] },
+];
+const spell = ([l, a]) => l + ACC[a];
+const key = q => (q === 'major' ? 'maj' : 'min');
+
+// Root, 3rd and 5th spelled properly (C minor = C E♭ G, not C D♯ G).
+function chordTones(pc, q) {
+  const [l, a] = ROOTS[pc][key(q)];
+  const li = LETTERS.indexOf(l);
+  return [[0, 0], [q === 'major' ? 4 : 3, 2], [7, 4]].map(([semi, steps]) => {
+    const tli = (li + steps) % 7;
+    const target = (pc + semi) % 12;
+    let acc = (target - LETTER_PC[tli] + 12) % 12;
+    if (acc > 6) acc -= 12;
+    return { pc: target, name: LETTERS[tli] + ACC[acc] };
+  });
+}
+
+// ---- Shapes ----
+// Strings low E to high E. Frets are counted from the barre (0 = on the barre, null = not played).
+const OPEN_PC = [4, 9, 2, 7, 11, 4];
+const OPEN_MIDI = [40, 45, 50, 55, 59, 64];
+const SHAPES = {
+  E: { rootString: 0, openPc: 4, barreFrom: 0,
+       major: { frets: [0, 2, 2, 1, 0, 0], fingers: [1, 3, 4, 2, 1, 1] },
+       minor: { frets: [0, 2, 2, 0, 0, 0], fingers: [1, 3, 4, 1, 1, 1] } },
+  A: { rootString: 1, openPc: 9, barreFrom: 1,
+       major: { frets: [null, 0, 2, 2, 2, 0], fingers: [null, 1, 2, 3, 4, 1] },
+       minor: { frets: [null, 0, 2, 2, 1, 0], fingers: [null, 1, 3, 4, 2, 1] } },
+};
+const barreFret = (shape, pc) => ((pc - SHAPES[shape].openPc + 12) % 12) || 12;
+const ordinal = n => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th');
+
+function drawShape(shape, pc, q) {
+  const s = SHAPES[shape], v = s[q], f = barreFret(shape, pc);
+  const tones = chordTones(pc, q);
+  const nameOf = p => (tones.find(t => t.pc === p) || {}).name || '';
+  const X0 = 45, DX = 30, Y0 = 46, DY = 46, ROWS = 4;
+  const sx = i => X0 + i * DX;
+  const rowY = r => Y0 + (r + 0.5) * DY;
+  let o = `<svg viewBox="0 0 230 290" role="img" aria-label="${shape} shape, barre at fret ${f}">`;
+  for (let r = 0; r <= ROWS; r++) o += `<line class="fret" x1="${sx(0)}" x2="${sx(5)}" y1="${Y0 + r * DY}" y2="${Y0 + r * DY}"/>`;
+  if (f === 1) o += `<line class="nut" x1="${sx(0)}" x2="${sx(5)}" y1="${Y0 - 2}" y2="${Y0 - 2}"/>`;
+  for (let i = 0; i < 6; i++) o += `<line class="str" x1="${sx(i)}" x2="${sx(i)}" y1="${Y0}" y2="${Y0 + ROWS * DY}"/>`;
+  o += `<text class="frlabel" x="${sx(0) - 21}" y="${rowY(0) + 5}" text-anchor="end">${f}fr</text>`;
+  // The barre
+  const bx = sx(s.barreFrom);
+  o += `<rect class="dot" x="${bx - 13}" y="${rowY(0) - 13}" width="${sx(5) - bx + 26}" height="26" rx="13"/>`;
+  o += `<text class="fing" x="${bx}" y="${rowY(0) + 5}" text-anchor="middle">1</text>`;
+  v.frets.forEach((fr, i) => {
+    if (fr === null) {
+      const y = Y0 - 18;
+      o += `<path class="mute" d="M${sx(i) - 7} ${y - 7}l14 14M${sx(i) + 7} ${y - 7}l-14 14"/>`;
+      return;
+    }
+    const isRoot = (OPEN_PC[i] + f + fr) % 12 === pc;
+    if (fr > 0) {
+      o += `<circle class="dot" cx="${sx(i)}" cy="${rowY(fr)}" r="13"/>`;
+      o += `<text class="fing" x="${sx(i)}" y="${rowY(fr) + 5}" text-anchor="middle">${v.fingers[i]}</text>`;
+    }
+    if (isRoot) o += `<circle class="rootring" cx="${sx(i)}" cy="${rowY(fr)}" r="16"/>`;
+  });
+  // Note names under the strings
+  v.frets.forEach((fr, i) => {
+    if (fr === null) return;
+    const p = (OPEN_PC[i] + f + fr) % 12;
+    o += `<text class="nm${p === pc ? ' root' : ''}" x="${sx(i)}" y="${Y0 + ROWS * DY + 26}" text-anchor="middle">${nameOf(p)}</text>`;
+  });
+  return o + '</svg>';
+}
+
+// ---- Sound: a plucked-string synth (Karplus–Strong), strummed low to high ----
+let ctx;
+function pluck(freq) {
+  const sr = ctx.sampleRate, len = Math.floor(sr * 2.6);
+  const N = Math.max(2, Math.round(sr / freq - 0.5));
+  const buf = ctx.createBuffer(1, len, sr), y = buf.getChannelData(0);
+  let prev = 0;
+  for (let n = 0; n < N; n++) { const r = Math.random() * 2 - 1; y[n] = (r + prev) / 2; prev = r; }
+  for (let n = N; n < len; n++) y[n] = 0.996 * 0.5 * (y[n - N] + (n > N ? y[n - N - 1] : 0));
+  const fade = Math.floor(sr * 0.3);
+  for (let n = 0; n < fade; n++) y[len - 1 - n] *= n / fade;
+  return buf;
+}
+function strum(shape) {
+  ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+  ctx.resume();
+  const v = SHAPES[shape][state.q], f = barreFret(shape, state.pc);
+  const t0 = ctx.currentTime + 0.05;
+  const out = ctx.createGain();
+  out.gain.value = 0.28;
+  out.connect(ctx.destination);
+  let k = 0;
+  v.frets.forEach((fr, i) => {
+    if (fr === null) return;
+    const midi = OPEN_MIDI[i] + f + fr;
+    const src = ctx.createBufferSource();
+    src.buffer = pluck(440 * 2 ** ((midi - 69) / 12));
+    src.connect(out);
+    src.start(t0 + k++ * 0.04);
+  });
+}
+
+// ---- Screen ----
+const state = { pc: 5, q: 'major' };
+try { Object.assign(state, JSON.parse(localStorage.getItem('rtb.state')) || {}); } catch {}
+
+$('notes').innerHTML = ROOTS.map((_, pc) => `<button type="button" class="note" data-pc="${pc}"><b></b><small></small></button>`).join('');
+
+function render() {
+  const { pc, q } = state, r = ROOTS[pc], k = key(q);
+  document.querySelectorAll('[data-q]').forEach(b => b.setAttribute('aria-pressed', b.dataset.q === q));
+  document.querySelectorAll('.note').forEach(b => {
+    const n = ROOTS[b.dataset.pc];
+    b.setAttribute('aria-pressed', +b.dataset.pc === pc);
+    b.querySelector('b').textContent = spell(n[k]);
+    b.querySelector('small').textContent = n.alt ? spell(n.alt[k]) : '';
+  });
+  const word = q === 'major' ? 'major' : 'minor';
+  $('name').innerHTML = `${spell(r[k])} ${word}` + (r.alt ? ` <span class="alt">or ${spell(r.alt[k])}</span>` : '');
+  $('tones').textContent = 'Notes: ' + chordTones(pc, q).map(t => t.name).join(' · ');
+  for (const sh of ['E', 'A']) {
+    const f = barreFret(sh, pc);
+    const str = sh === 'E' ? '6th' : '5th';
+    $('cap-' + sh.toLowerCase()).innerHTML = `Root on the ${str} string<br><b>${ordinal(f)} fret</b>`;
+    $('dia-' + sh.toLowerCase()).innerHTML = drawShape(sh, pc, q);
+  }
+  try { localStorage.setItem('rtb.state', JSON.stringify(state)); } catch {}
+}
+document.querySelectorAll('[data-q]').forEach(b => b.addEventListener('click', () => { state.q = b.dataset.q; render(); }));
+$('notes').addEventListener('click', e => { const b = e.target.closest('.note'); if (b) { state.pc = +b.dataset.pc; render(); } });
+$('up').addEventListener('click', () => { state.pc = (state.pc + 1) % 12; render(); });
+$('down').addEventListener('click', () => { state.pc = (state.pc + 11) % 12; render(); });
+document.querySelectorAll('[data-hear]').forEach(b => b.addEventListener('click', () => strum(b.dataset.hear)));
+render();
+
+// ---- Settings: appearance and app updates (saved on this device) ----
+function markTheme() {
+  const cur = savedTheme();
+  document.querySelectorAll('[data-theme-v]').forEach(b => b.setAttribute('aria-pressed', b.dataset.themeV === cur));
+}
+document.querySelectorAll('[data-theme-v]').forEach(b => b.addEventListener('click', () => {
+  try { localStorage.setItem('rtb.theme', b.dataset.themeV); } catch {}
+  applyTheme(b.dataset.themeV);
+  markTheme();
+}));
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => applyTheme(savedTheme()));
+$('settings-open').addEventListener('click', () => {
+  markTheme();
+  $('ver-line').textContent = `You're on ${window.APP_VERSION}.`;
+  $('set-update').disabled = false;
+  $('settings').showModal();
+});
+$('settings-close').addEventListener('click', () => $('settings').close());
+$('settings').addEventListener('click', e => { if (e.target === $('settings')) $('settings').close(); });
+$('set-update').addEventListener('click', async () => {
+  const ver = $('ver-line'), ub = $('set-update'), reg = window.SW_REG;
+  if (!reg || !navigator.onLine) { ver.textContent = 'Connect to the internet, then try again.'; return; }
+  ub.disabled = true;
+  ver.textContent = 'Checking…';
+  try { await reg.update(); } catch {}
+  const w = reg.waiting || reg.installing;
+  if (w) {
+    ver.textContent = 'Updating now…';
+    const go = () => w.postMessage('skipWaiting');
+    if (w.state === 'installed') go();
+    else w.addEventListener('statechange', () => { if (w.state === 'installed') go(); });
+  } else {
+    ver.textContent = `You're on the latest version (${window.APP_VERSION}).`;
+    ub.disabled = false;
+  }
+});
+</script>
+
+<script>
+// Offline support + updates. See sw.js.
+// The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
+window.APP_VERSION = 'v1';
+(async () => {
+  if (!('serviceWorker' in navigator)) return;
+  const reg = await navigator.serviceWorker.register('sw.js');
+  window.SW_REG = reg;
+  const banner = document.getElementById('update-banner');
+  const hadController = Boolean(navigator.serviceWorker.controller);
+  const apply = (worker) => worker.postMessage('skipWaiting');
+  // Right after the app opens, updates apply on their own; later on, offer a banner instead.
+  const justOpened = () => performance.now() < 20000;
+  const handle = (worker) => {
+    if (!worker || !navigator.serviceWorker.controller) return;
+    if (justOpened()) apply(worker);
+    else {
+      banner.hidden = false;
+      document.getElementById('update-btn').onclick = () => apply(worker);
+    }
+  };
+  const watch = (worker) => {
+    if (!worker) return;
+    if (worker.state === 'installed') return handle(worker);
+    worker.addEventListener('statechange', () => { if (worker.state === 'installed') handle(worker); });
+  };
+  handle(reg.waiting);
+  watch(reg.installing);
+  reg.addEventListener('updatefound', () => watch(reg.installing));
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (hadController && !reloaded) { reloaded = true; location.reload(); }
+  });
+  const check = () => { if (navigator.onLine) reg.update().catch(() => {}).then(() => handle(reg.waiting)); };
+  check();
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') check(); });
+})();
+</script>
+</body>
+</html>
