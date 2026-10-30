@@ -64,7 +64,7 @@ website repo, `Claude Apps/website`): icon, name and one-line description, in th
 
 **Raise the Barre**: a simple teaching screen David uses to show students every E-shape and A-shape barre chord,
 major and minor. Repo `raise-the-barre`, made 2026-10-30. Live: https://www.davyrockett.com/raise-the-barre/
-Listed in the Apps suite under "students & clients".
+**Not** on the Apps screen or Rundown: David asked for it to be removed (2026-10-30), so leave it off even though new apps normally go there.
 
 - Everything is in `index.html` (no app.js). Saved on the device: `rtb.state` (note + major/minor) and `rtb.theme`.
 - `SHAPES` holds the two shapes, frets counted from the barre (null = muted string) plus finger numbers.
